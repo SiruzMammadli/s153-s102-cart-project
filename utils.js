@@ -13,15 +13,15 @@ export function listenCartBtn() {
     cartTabEl.style.translate = "100% 0";
   });
 
-  document.addEventListener("click", (event) => {
-    if (
-      event.target &&
-      !event.target.classList.contains("cart_tab") &&
-      !event.target.classList.contains("shopping_icon")
-    ) {
-      cartTabEl.style.translate = "100% 0";
-    }
-  });
+  // document.addEventListener("click", (event) => {
+  //   if (
+  //     event.target &&
+  //     !event.target.classList.contains("cart_tab") &&
+  //     !event.target.classList.contains("shopping_icon")
+  //   ) {
+  //     cartTabEl.style.translate = "100% 0";
+  //   }
+  // });
 }
 
 export function productDataToHTML(datas) {
@@ -52,5 +52,34 @@ function getProductIdFromHTML(products) {
         addToCart(currentProduct);
       }
     });
+  });
+}
+
+export function listenSearchInput(datas) {
+  const searchInputEl = document.querySelector("header .search > input");
+
+  searchInputEl.addEventListener("input", ({ target }) => {
+    const filteredDatas = datas.filter((product) =>
+      product.name.toLowerCase().includes(target.value.toLowerCase())
+    );
+    productDataToHTML(filteredDatas);
+  });
+}
+
+export function listenSortingSelect(datas) {
+  const sortingSelectEl = document.querySelector(
+    ".product_list_wrapper .sorting"
+  );
+
+  sortingSelectEl.addEventListener("change", ({ target }) => {
+    const val = target.value;
+    const sortedDatas =
+      val === "cheap"
+        ? datas.sort((a, b) => a.price - b.price)
+        : val === "expensive"
+        ? datas.sort((a, b) => b.price - a.price)
+        : [];
+        
+    if (sortedDatas.length) productDataToHTML(sortedDatas);
   });
 }

@@ -1,8 +1,9 @@
 const cartListElement = document.querySelector(".cart_list");
 const cartResetBtn = document.querySelector(".reset_cart_btn");
-const cartItems = cartListElement.querySelectorAll('.cart_item');
+const cartItems = cartListElement.querySelectorAll(".cart_item");
 
-let cartList = [];
+let cartList = JSON.parse(localStorage.getItem("shopping_cart")) ?? [];
+if (cartList.length) refreshHTML();
 
 cartResetBtn.addEventListener("click", () => {
   cartList = [];
@@ -57,9 +58,10 @@ function cartDataToHTML() {
 }
 
 function refreshHTML() {
-    cartDataToHTML();
-    cartIconCount();
-    getCartTotalPrice();
+  localStorage.setItem("shopping_cart", JSON.stringify(cartList));
+  cartDataToHTML();
+  cartIconCount();
+  getCartTotalPrice();
 }
 
 function cartIconCount() {
@@ -67,37 +69,39 @@ function cartIconCount() {
   cartCountElement.innerText = cartList.length;
 }
 
-function getCartTotalPrice(){
-    const totalPriceElement = document.querySelector('.total_price');
-    
-    let sum = 0;
-    cartList.forEach((item) => {
-        sum = sum + (item.price * item.quantity);
-    });
-    
-    totalPriceElement.innerText = sum.toFixed(2);
+function getCartTotalPrice() {
+  const totalPriceElement = document.querySelector(".total_price");
+
+  let sum = 0;
+  cartList.forEach((item) => {
+    sum = sum + item.price * item.quantity;
+  });
+
+  totalPriceElement.innerText = sum.toFixed(2);
 }
 
-cartListElement.addEventListener('click', (e) => {
-    const minusEl = e.target.classList.contains('minus');
-    if (e.target.classList.contains('minus') || e.target.classList.contains('plus')){
-        const itemId = Number(e.target.parentNode.parentNode.dataset.id);
-        const existItemIndex = cartList.findIndex((p) => p.id === itemId);
+cartListElement.addEventListener("click", (e) => {
+  const minusEl = e.target.classList.contains("minus");
+  if (
+    e.target.classList.contains("minus") ||
+    e.target.classList.contains("plus")
+  ) {
+    const itemId = Number(e.target.parentNode.parentNode.dataset.id);
+    const existItemIndex = cartList.findIndex((p) => p.id === itemId);
 
-        if (existItemIndex > -1) {
-            increaseOrDecreaseQuantity(minusEl ? 'minus' : 'plus', existItemIndex);
-        };
+    if (existItemIndex > -1) {
+      increaseOrDecreaseQuantity(minusEl ? "minus" : "plus", existItemIndex);
     }
+  }
 });
 
 function increaseOrDecreaseQuantity(type, id) {
-    let quantity = cartList[id].quantity
-    if (type === 'minus') {
-        cartList[id].quantity = quantity > 1 ? quantity - 1 : 1;
-
-    }
-    if (type === 'plus') {
-        cartList[id].quantity = quantity + 1;
-    }
-    refreshHTML();
+  let quantity = cartList[id].quantity;
+  if (type === "minus") {
+    cartList[id].quantity = quantity > 1 ? quantity - 1 : 1;
+  }
+  if (type === "plus") {
+    cartList[id].quantity = quantity + 1;
+  }
+  refreshHTML();
 }
